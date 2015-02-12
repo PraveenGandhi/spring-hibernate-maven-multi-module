@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.learning.demo.spring.hibernate.demo.entity.Address">
+		<id name="id" type="long">
+			<generator class="identity" />
+		</id>
+		<property name="street" type="java.lang.String" />
+		<property name="city" type="java.lang.String" />
+	</class>
+</hibernate-mapping>

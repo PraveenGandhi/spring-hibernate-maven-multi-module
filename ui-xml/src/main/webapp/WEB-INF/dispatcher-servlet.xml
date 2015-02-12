@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	<!-- <util:properties id="nodeProperty" location="classpath:db.properties" 
+		/> -->
+	<context:component-scan base-package="com.learning.demo.spring.hibernate.demo"></context:component-scan>
+	<context:property-placeholder location="classpath:jdbc.properties" />
+	<mvc:resources location="/" mapping="/**"/>
+	<mvc:annotation-driven>
+		<mvc:message-converters register-defaults="true">
+			<bean id="jacksonMessageConverter"
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+				<property name="objectMapper" ref="jacksonObjectMapper" />
+				<property name="supportedMediaTypes">
+					<list>
+						<bean class="org.springframework.http.MediaType">
+							<constructor-arg index="0" value="application" />
+							<constructor-arg index="1" value="json" />
+							<constructor-arg index="2" value="UTF-8" />
+						</bean>
+					</list>
+				</property>
+
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<bean id="jacksonObjectMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
+		<!-- <property name="annotationIntrospector" ref="jaxbAnnotationInspector" 
+			/> -->
+	</bean>
+	<!-- View resolver that delegates to other view resolvers based on the content 
+		type -->
+	<bean
+		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<!-- All configuration is now done by the manager - since Spring V3.2 -->
+		<property name="contentNegotiationManager" ref="cnManager" />
+
+		<!-- Define the view resolvers explicitly -->
+		<property name="viewResolvers">
+			<list>
+				<!-- <bean class="org.springframework.web.servlet.view.XmlViewResolver"> 
+					<property name="location" value="spreadsheet-views.xml"/> </bean> -->
+
+				<bean class="com.learning.demo.spring.hibernate.demo.view.ExcelViewResolver" />
+				<bean class="com.learning.demo.spring.hibernate.demo.view.PdfViewResolver" />
+				<bean
+					class="com.learning.demo.spring.hibernate.demo.view.Jaxb2MarshallingXmlViewResolver" />
+				<bean class="com.learning.demo.spring.hibernate.demo.view.JsonViewResolver" />
+
+				<bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+					<property name="templateEngine" ref="templateEngine" />
+					<property name="order" value="1" />
+					<property name="viewNames" value="*" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cnManager"
+		class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+		<property name="ignoreAcceptHeader" value="false" />
+		<property name="defaultContentType" value="text/html" />
+		<property name="mediaTypes">
+			<props>
+				<prop key="htm">text/htm</prop>
+				<prop key="html">text/html</prop>
+				<prop key="json">application/json</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="templateResolver"
+		class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+		<property name="prefix" value="/WEB-INF/templates/" />
+		<property name="suffix" value=".html" />
+		<property name="templateMode" value="HTML5" />
+		<property name="cacheable" value="false" />
+	</bean>
+
+	<bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+		<property name="templateResolver" ref="templateResolver" />
+	</bean>
+
+	<bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+		<property name="templateEngine" ref="templateEngine" />
+		<property name="order" value="1" />
+		<property name="viewNames" value="*" />
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		p:driverClassName="${db.driver}" p:url="${db.url}"
+		p:username="${db.username}" p:password="${db.password}" />
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"
+		p:dataSource-ref="dataSource">
+		<property name="mappingResources">
+			<list>
+				<value>hbm_files/Employee.hbm.xml</value>
+				<!-- <value>hbm_files/Address.hbm.xml</value> -->
+			</list>
+		</property>
+	</bean>
+
+</beans>

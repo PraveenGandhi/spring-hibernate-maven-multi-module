@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.learning.demo.spring.hibernate.demo.entity.Employee">
+		<id name="id" type="long">
+			<generator class="sequence" />
+		</id>
+		<property name="firstName" type="java.lang.String" />
+		<property name="lastName" type="java.lang.String" />
+<!-- 		<one-to-one name="address" fetch="join" lazy="false"></one-to-one> -->
+	</class>
+</hibernate-mapping>

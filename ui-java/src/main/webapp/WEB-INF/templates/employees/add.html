@@ -1,0 +1,17 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Add New Employee</title>
+</head>
+<body>
+<h2>Employee Information</h2>
+<form method="POST" th:object="${employee}" th:action="@{/employees/add}">
+   	<label for="firstName">First Name</label>
+   	<input th:field="*{firstName}" /><br/>
+   	<label for="lastName">Last Name</label>
+   	<input th:field="*{lastName}" /><br/>
+	<input type="submit" value="Submit"/>
+</form>
+</body>
+</html>
